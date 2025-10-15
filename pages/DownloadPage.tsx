@@ -6,28 +6,34 @@ const DownloadCard: React.FC<{
     platform: string;
     description: string;
     downloadUrl?: string;
-}> = ({ icon, platform, description, downloadUrl }) => (
-    <div className="bg-brand-secondary border border-brand-border rounded-lg p-8 text-center flex flex-col items-center">
-        <div className="text-brand-accent w-16 h-16 mb-4">
-            {icon}
+}> = ({ icon, platform, description, downloadUrl }) => {
+    const isAndroid = platform === 'Android';
+    
+    return (
+        <div className="bg-brand-secondary border border-brand-border rounded-lg p-8 text-center flex flex-col items-center">
+            <div className="text-brand-accent w-16 h-16 mb-4">
+                {icon}
+            </div>
+            <h3 className="text-2xl font-bold text-brand-text">{platform}</h3>
+            <p className="text-brand-subtext mt-2 mb-6 flex-grow">{description}</p>
+            {downloadUrl ? (
+                 <a 
+                    href={downloadUrl}
+                    download={!isAndroid}
+                    target={isAndroid ? '_blank' : '_self'}
+                    rel={isAndroid ? 'noopener noreferrer' : ''}
+                    className="w-full bg-brand-accent text-white px-8 py-3 rounded-full font-semibold text-lg hover:bg-brand-accent-hover transition-transform duration-200 hover:scale-105 text-center"
+                >
+                    Download
+                </a>
+            ) : (
+                <button className="w-full bg-gray-700 text-white px-8 py-3 rounded-full font-semibold text-lg cursor-not-allowed opacity-50">
+                    Coming Soon
+                </button>
+            )}
         </div>
-        <h3 className="text-2xl font-bold text-brand-text">{platform}</h3>
-        <p className="text-brand-subtext mt-2 mb-6 flex-grow">{description}</p>
-        {downloadUrl ? (
-             <a 
-                href={downloadUrl}
-                download
-                className="w-full bg-brand-accent text-white px-8 py-3 rounded-full font-semibold text-lg hover:bg-brand-accent-hover transition-transform duration-200 hover:scale-105 text-center"
-            >
-                Download
-            </a>
-        ) : (
-            <button className="w-full bg-gray-700 text-white px-8 py-3 rounded-full font-semibold text-lg cursor-not-allowed opacity-50">
-                Coming Soon
-            </button>
-        )}
-    </div>
-);
+    );
+};
 
 
 const DownloadPage = () => {

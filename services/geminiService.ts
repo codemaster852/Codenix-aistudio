@@ -14,9 +14,13 @@ export const generateCodenixIdeResponse = async (prompt: string): Promise<Conten
   }
   
   try {
+    // FIX: Use systemInstruction for better prompt engineering.
     const response = await ai.models.generateContent({
         model: 'gemini-2.5-pro',
-        contents: `You are Codenix IDE, a world-class AI coding assistant. Your purpose is to provide clean, efficient, and accurate code, explanations, and debugging help. Be concise and clear. User prompt: "${prompt}"`,
+        contents: prompt,
+        config: {
+          systemInstruction: "You are Codenix IDE, a world-class AI coding assistant. Your purpose is to provide clean, efficient, and accurate code, explanations, and debugging help. Be concise and clear."
+        }
     });
     return [{ type: 'text', value: response.text }];
   } catch (error) {

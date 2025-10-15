@@ -43,17 +43,9 @@ const ChatPage: React.FC<ChatPageProps> = ({ modelId, setCurrentPage }) => {
     };
   }, [messages, isVoiceMode]);
   
-  // Initial message setup
+  // Redirect if no model is selected
   useEffect(() => {
-    if (selectedModel) {
-      setMessages([
-        {
-          id: `ai-intro-${Date.now()}`,
-          sender: 'ai',
-          content: [{ type: 'text', value: `Hello! You are now chatting with ${selectedModel.name}. How can I help you today?` }],
-        },
-      ]);
-    } else {
+    if (!selectedModel) {
       setCurrentPage('models');
     }
   }, [selectedModel, setCurrentPage]);

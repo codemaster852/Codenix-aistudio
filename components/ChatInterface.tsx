@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { AIModel, Message, ContentPart } from '../types';
@@ -15,6 +15,8 @@ declare global {
 
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 const isSpeechRecognitionSupported = !!SpeechRecognition;
+
+const welcomeMessages = ["How can I assist you today?", "What is on your agenda?"];
 
 interface ChatInterfaceProps {
   model: AIModel;
@@ -73,9 +75,14 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ model, messages, isLoadin
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  const welcomeMessage = useMemo(() => welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)], []);
+  const hasUserSentMessage = messages.some(msg => msg.sender === 'user');
+
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+    if(hasUserSentMessage) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, hasUserSentMessage]);
   
   useEffect(() => {
     if (textareaRef.current) {
@@ -166,33 +173,44 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ model, messages, isLoadin
 
   return (
     <div className="h-full flex flex-col container mx-auto max-w-4xl">
-      <div className="flex-grow overflow-y-auto p-6 space-y-6">
-        {messages.map((msg) => (
-          <div key={msg.id} className={`flex gap-4 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-            {msg.sender === 'ai' && getAiAvatar()}
-            <div
-              className={`
-                max-w-xl rounded-2xl px-5 py-3
-                ${
-                  msg.sender === 'user'
-                    ? 'bg-brand-accent text-white rounded-br-none'
-                    : 'bg-brand-secondary text-brand-subtext rounded-bl-none'
-                }
-              `}
-            >
-              {msg.content[0]?.type === 'text' && msg.content[0]?.value === '...' && isLoading ? (
-                  <div className="flex items-center justify-center space-x-1.5">
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse [animation-delay:-0.3s]"></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse [animation-delay:-0.15s]"></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse"></div>
-                  </div>
-              ) : (
-                msg.content.map((part, index) => renderContentPart(part, index, onSendMessage))
-              )}
+      <div className="flex-grow overflow-y-auto p-6">
+        {!hasUserSentMessage ? (
+            <div className="h-full flex flex-col items-center justify-center text-center pb-20">
+                <div className="w-24 h-24 mb-4 text-brand-text">
+                    <model.logo />
+                </div>
+                <p className="text-xl text-brand-subtext">{welcomeMessage}</p>
             </div>
+        ) : (
+            <div className="space-y-6">
+            {messages.map((msg) => (
+              <div key={msg.id} className={`flex gap-4 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                {msg.sender === 'ai' && getAiAvatar()}
+                <div
+                  className={`
+                    max-w-xl rounded-2xl px-5 py-3
+                    ${
+                      msg.sender === 'user'
+                        ? 'bg-brand-accent text-white rounded-br-none'
+                        : 'bg-brand-secondary text-brand-subtext rounded-bl-none'
+                    }
+                  `}
+                >
+                  {msg.content[0]?.type === 'text' && msg.content[0]?.value === '...' && isLoading ? (
+                      <div className="flex items-center justify-center space-x-1.5">
+                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse [animation-delay:-0.3s]"></div>
+                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse [animation-delay:-0.15s]"></div>
+                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse"></div>
+                      </div>
+                  ) : (
+                    msg.content.map((part, index) => renderContentPart(part, index, onSendMessage))
+                  )}
+                </div>
+              </div>
+            ))}
+            <div ref={messagesEndRef} />
           </div>
-        ))}
-        <div ref={messagesEndRef} />
+        )}
       </div>
 
       <div className="px-6 pb-6 pt-2">

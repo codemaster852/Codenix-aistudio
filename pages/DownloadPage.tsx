@@ -68,7 +68,7 @@ const DownloadPage = () => {
                     icon={<AndroidIcon className="w-full h-full" />}
                     platform="Android"
                     description="Get the Codenix experience on the go with our Android app."
-                    downloadUrl="/codenix.apk"
+                    downloadUrl="https://drive.google.com/file/d/1iJXrR3fRUTPMRieNb77AIy6LVs8PZCa2/view?usp=sharing"
                 />
             </div>
         </section>

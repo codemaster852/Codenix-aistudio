@@ -2,8 +2,6 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { AIModel, Message, Page, ContentPart } from '../types';
 import { MODELS } from '../constants';
 import { callNix15Webhook } from '../services/webhookService';
-// FIX: Import the gemini service to handle Codenix IDE model
-import { generateCodenixIdeResponse } from '../services/geminiService';
 import ChatInterface from '../components/ChatInterface';
 import { SpeakerWaveIcon, SpeakerXMarkIcon } from '../components/icons';
 
@@ -58,8 +56,6 @@ const ChatPage: React.FC<ChatPageProps> = ({ modelId, setCurrentPage }) => {
     const userMessage: Message = {
       id: `user-${Date.now()}`,
       sender: 'user',
-      // If the message is from a button click, we show the button's text value as the user's message
-      // FIX: Simplified redundant conditional
       content: [{ type: 'text', value: prompt }],
     };
     setMessages((prev) => [...prev, userMessage]);
@@ -76,9 +72,6 @@ const ChatPage: React.FC<ChatPageProps> = ({ modelId, setCurrentPage }) => {
       let aiResponseContent: ContentPart[] = [{ type: 'text', value: "Sorry, this model is not configured." }];
       if (selectedModel.id === 'nix-1.5') {
         aiResponseContent = await callNix15Webhook(prompt);
-      // FIX: Add logic to handle the Codenix IDE model
-      } else if (selectedModel.id === 'codenix-ide') {
-        aiResponseContent = await generateCodenixIdeResponse(prompt);
       }
       
       setMessages((prev) => prev.slice(0, -1).concat({

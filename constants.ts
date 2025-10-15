@@ -5,9 +5,9 @@ export const MODELS: AIModel[] = [
   {
     id: 'codenix-ide',
     name: 'Codenix IDE',
-    description: 'A world-class AI coding assistant. Provides clean, efficient, and accurate code, explanations, and debugging help.',
-    status: ModelStatus.Working,
-    version: '2.5-pro',
+    description: 'The original AI coding assistant, now decommissioned. It provided world-class code generation, explanations, and debugging help.',
+    status: ModelStatus.Stopped,
+    version: '2.5-pro (Legacy)',
     features: [
       'Code Generation & Completion',
       'Debugging Assistance',

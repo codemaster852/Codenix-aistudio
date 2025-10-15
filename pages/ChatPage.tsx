@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { AIModel, Message, Page, ContentPart } from '../types';
 import { MODELS } from '../constants';
 import { callNix15Webhook } from '../services/webhookService';
-import { generateCodenixIdeResponse } from '../services/geminiService';
 import ChatInterface from '../components/ChatInterface';
 import { SpeakerWaveIcon, SpeakerXMarkIcon } from '../components/icons';
 
@@ -74,8 +73,6 @@ const ChatPage: React.FC<ChatPageProps> = ({ modelId, setCurrentPage }) => {
       let aiResponseContent: ContentPart[] = [{ type: 'text', value: "Sorry, I couldn't get a response." }];
       if (selectedModel.id === 'nix-1.5') {
         aiResponseContent = await callNix15Webhook(prompt);
-      } else if (selectedModel.id === 'codenix-ide') {
-        aiResponseContent = await generateCodenixIdeResponse(prompt);
       }
       
       setMessages((prev) => prev.slice(0, -1).concat({

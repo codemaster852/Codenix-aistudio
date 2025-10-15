@@ -32,11 +32,11 @@ export const MODELS: AIModel[] = [
   {
     id: 'codenix-ide',
     name: 'Codenix IDE',
-    description: 'A fine-tuned model for code generation, explanation, and debugging.',
-    status: ModelStatus.Working,
+    description: 'A fine-tuned model for code generation, explanation, and debugging. Currently offline.',
+    status: ModelStatus.Stopped,
     version: '1.0',
     logo: Logos.CodenixIdeLogo,
-    features: ['Code generation & explanation', 'Debugging assistance', 'Powered by Gemini Pro', 'External IDE'],
+    features: ['Code generation & explanation', 'Debugging assistance', 'Currently offline', 'External IDE'],
     externalUrl: 'https://codenix-ide.netlify.app/',
   },
   {

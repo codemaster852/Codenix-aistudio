@@ -30,21 +30,10 @@ const DocsPage = () => {
 
           <h3>API and Webhook Usage</h3>
           <p>
-            For programmatic access, our "Working" models can be reached via endpoints. Here’s an example of how to call the Nix 1.5 webhook:
+            Programmatic access to our models, including Nix 1.5, is available via dedicated API endpoints for subscribers. This allows for seamless integration into your own applications and services.
           </p>
-          <pre>
-            <code>
-{`fetch('https://cloud.activepieces.com/api/v1/webhooks/WR43cDYER0O9TiHq8exAH', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ prompt: 'Your prompt here' })
-})
-.then(res => res.json())
-.then(data => console.log(data));`}
-            </code>
-          </pre>
           <p>
-            The Codenix IDE model is powered by the Gemini API. To use it in your own projects, you will need to set up an API key and use the official client libraries.
+            To get your unique API key and access the webhook URL, please refer to the 'API Keys' section in your account dashboard. For enterprise solutions or more information on our paid plans, please contact our sales team.
           </p>
         </article>
       </div>

@@ -3,6 +3,7 @@ import { AIModel, Message, ContentPart } from '../types';
 import CommandSuggestions from './CommandSuggestions';
 import { PaperAirplaneIcon, UserCircleIcon, SparklesIcon } from './icons';
 import CodeBlock from './CodeBlock';
+import { COMMANDS } from '../constants';
 
 const parseTextForCodeBlocks = (text: string) => {
   const codeBlockRegex = /```(\w+)?\n([\s\S]+?)```/g;
@@ -72,7 +73,6 @@ const ChatMessage: React.FC<{ message: Message, model: AIModel, onSendMessage: (
     <div className={`flex items-start gap-4 ${isUser ? 'justify-end' : ''}`}>
       {!isUser && (
         <div className="w-8 h-8 flex-shrink-0 bg-brand-secondary rounded-full p-1 border border-brand-border text-brand-text">
-          {/* FIX: Check if content part is of type 'text' before accessing 'value' to show loading animation. */}
           {message.content[0]?.type === 'text' && message.content[0].value === '...' ? <SparklesIcon className="animate-pulse" /> : <ModelLogo />}
         </div>
       )}
@@ -104,6 +104,9 @@ interface ChatInterfaceProps {
 
 const ChatInterface: React.FC<ChatInterfaceProps> = ({ model, messages, isLoading, onSendMessage }) => {
   const [input, setInput] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [filteredSuggestions, setFilteredSuggestions] = useState(COMMANDS);
+  const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -119,15 +122,50 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ model, messages, isLoadin
     }
   }, [input]);
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const value = e.target.value;
+    setInput(value);
+
+    if (value.startsWith('/') && !value.includes(' ')) {
+        const query = value.substring(1).toLowerCase();
+        const filtered = COMMANDS.filter(cmd => cmd.name.toLowerCase().includes(`/${query}`));
+        setFilteredSuggestions(filtered);
+        setShowSuggestions(true);
+        setActiveSuggestionIndex(0);
+    } else {
+        setShowSuggestions(false);
+    }
+  };
+  
+  const handleSelectSuggestion = (command: string) => {
+    setInput(command + ' ');
+    setShowSuggestions(false);
+    textareaRef.current?.focus();
+  };
+
   const handleSend = () => {
     if (input.trim() && !isLoading) {
       onSendMessage(input);
       setInput('');
+      setShowSuggestions(false);
     }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (showSuggestions) {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setActiveSuggestionIndex(prev => (prev + 1) % filteredSuggestions.length);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setActiveSuggestionIndex(prev => (prev - 1 + filteredSuggestions.length) % filteredSuggestions.length);
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        handleSelectSuggestion(filteredSuggestions[activeSuggestionIndex].name);
+      } else if (e.key === 'Escape') {
+        setShowSuggestions(false);
+      }
+    } else if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
@@ -143,12 +181,18 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ model, messages, isLoadin
       </div>
       <div className="p-4 md:p-6 border-t border-brand-border bg-brand-primary/80 backdrop-blur-sm">
         <div className="max-w-2xl mx-auto relative">
-          <CommandSuggestions model={model} input={input} onSelect={(cmd) => setInput(cmd)} />
+          {showSuggestions && (
+            <CommandSuggestions 
+              suggestions={filteredSuggestions}
+              onSelect={handleSelectSuggestion}
+              activeIndex={activeSuggestionIndex}
+            />
+          )}
           <div className="relative flex items-end">
             <textarea
               ref={textareaRef}
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={handleInputChange}
               onKeyDown={handleKeyDown}
               placeholder={`Message ${model.name}...`}
               rows={1}

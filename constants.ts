@@ -1,5 +1,7 @@
+import React from 'react';
 import { AIModel, ModelStatus } from './types';
 import { Nix05Logo, Nix1Logo, Nix15Logo, Nix2Logo, CodenixIdeLogo } from './components/modelLogos';
+import { ImageIcon, SpeakerWaveIcon, VideoIcon, SearchIcon, DocumentIcon, QrCodeIcon } from './components/icons';
 
 export const MODELS: AIModel[] = [
   {
@@ -70,4 +72,14 @@ export const MODELS: AIModel[] = [
     ],
     logo: Nix05Logo,
   },
+];
+
+export const COMMANDS = [
+  { name: '/image', icon: ImageIcon, description: 'Generate an image from a prompt' },
+  { name: '/voice', icon: SpeakerWaveIcon, description: 'Generate audio from text' },
+  { name: '/video', icon: VideoIcon, description: 'Generate a short video clip' },
+  { name: '/veo3', icon: VideoIcon, description: 'Advanced video generation' },
+  { name: '/docs', icon: DocumentIcon, description: 'Search documentation' },
+  { name: '/search', icon: SearchIcon, description: 'Perform a web search' },
+  { name: '/qr', icon: QrCodeIcon, description: 'Create a QR code' },
 ];
